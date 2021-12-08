@@ -3,3 +3,4 @@
 .lsp/.cache
 .cpcache
 .nrepl-port
+.lsp/sqlite.db
