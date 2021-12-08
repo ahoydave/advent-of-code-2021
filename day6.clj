@@ -1,4 +1,5 @@
-(ns day6)
+(ns day6
+  (:require [clojure.edn :as edn]))
 
 (def breed-age 6)
 (def init-age 8)
@@ -53,27 +54,33 @@
       (update breed-age + (first pop-index))
       (conj (first pop-index))))
 
-(defn count-indexed-pop [pop-index]
-  (reduce +
-          0
-          pop-index))
-
 (defn pop-index-after-steps [n init-pop]
-  (loop [pop (input-to-indexed init-pop)
-         counter n]
-    (if (= 0 counter)
-      (count-indexed-pop pop)
-      (recur (step-indexed pop) (dec counter)))))
-
+  (apply +
+         (nth (iterate step-indexed (input-to-indexed init-pop))
+              n)))
 
 (comment
   (input-to-indexed example-input)
   (input-to-indexed (step (step example-input)))
   (step-indexed (step-indexed (input-to-indexed example-input)))
-  (count-indexed-pop (input-to-indexed example-input))
-  (pop-index-after-steps 80 example-input)
-  (count (pop-after-steps 80 example-input)))
+  (= (pop-index-after-steps 80 example-input)
+     5934)
+  (count (pop-after-steps 80 example-input))
 
+  (->> "day6input.txt"
+       slurp
+       (format "[%s]")
+       edn/read-string
+       (pop-index-after-steps 80))
+
+  (->> "day6input.txt"
+       slurp
+       (format "[%s]")
+       edn/read-string
+       (pop-index-after-steps 256)))
+
+;; It seems there might be something more efficient - investigate the behaviour of
+;; one fish...
 (comment
   (loop [acc []
          index (vec (concat [1] (repeat init-age 0)))
