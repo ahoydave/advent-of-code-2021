@@ -1,6 +1,5 @@
 (ns day8
   (:require [clojure.set :as set]
-            [clojure.edn :as edn]
             [clojure.string :as s])
   (:import (java.lang Integer)))
 
@@ -42,6 +41,11 @@
        count))
 
 ;; part 2
+
+;; I solved this a bit of an indirect way - using first the frequency of the segments
+;; to get b, e and f's mapping. Then used the known digits to get the remaining segments
+
+;; Letter count isn't used in the program - was part of working out the algorithm
 (def letter-count
   {\a 8
    \b 6
@@ -64,8 +68,7 @@
         four (first (filter #(= 4 (count %)) examples))
         d (first (disj four b c f))
         eight (first (filter #(= 7 (count %)) examples))
-        g (first (disj eight a b c d e f))
-        ]
+        g (first (disj eight a b c d e f))]
     (-> {}
         (assoc a \a)
         (assoc b \b)
