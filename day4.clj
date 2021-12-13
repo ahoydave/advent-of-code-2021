@@ -55,9 +55,35 @@
      (let [curr-num-set (set curr-nums)
            winners      (filter #(board-wins? % curr-num-set) boards)]
        (if (pos? (count winners))
-         (* (Integer/parseInt (last curr-nums)) (board-score (first winners) curr-nums))
+         (* (Integer/parseInt (last curr-nums)) (board-score (first winners) curr-num-set))
          (recur (rest uncalled-nums) (conj curr-nums (first uncalled-nums))))))))
 
 (comment
   (part1 example-input)
   (part1 (slurp "day4input.txt")))
+
+;;part2
+
+(defn part2 [input]
+  (let [nums   (numbers input)
+        boards (->> (-> input
+                        (s/split #"\n")
+                        rest)
+                    (partition 6)
+                    (map rest)
+                    (map prepare-board))]
+    (loop [uncalled-nums nums
+           curr-nums     []
+           remaining-boards boards]
+      (let [curr-num-set (set curr-nums)
+            non-winning-boards (filter #(not (board-wins? % curr-num-set)) remaining-boards)]
+        (if (= 0 (count non-winning-boards))
+          (* (Integer/parseInt (last curr-nums))
+             (board-score (first remaining-boards) curr-num-set))
+          (recur (rest uncalled-nums)
+                 (conj curr-nums (first uncalled-nums))
+                 non-winning-boards))))))
+
+(comment
+  (part2 example-input)
+  (part2 (slurp "day4input.txt")))
