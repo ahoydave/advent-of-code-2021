@@ -1,5 +1,4 @@
 var fs = require('fs');
-const assert = require('node:assert').strict;
 
 // const input = fs.readFileSync('day14input_eg.txt', { encoding: 'UTF8' });
 const input = fs.readFileSync('day14input.txt', { encoding: 'UTF8' });
@@ -15,29 +14,32 @@ for (s of rules) {
     ruleLookup.set(key, value);
 }
 
-function expandAndCount(left, right, rewrites, acc) {
-    console.log(`current depth is ${rewrites}`);
-    if (rewrites === 0) {
-        // console.log(`adding ${left}`);
-        acc.set(left, (acc.get(left) ?? 0) + 1);
-    } else {
-        const middle = ruleLookup.get(left + right);
-        expandAndCount(left, middle, rewrites - 1, acc);
-        expandAndCount(middle, right, rewrites - 1, acc);
-    }
+function countAdd(counter, k, v) {
+    counter.set(k, (counter.get(k) ?? 0) + v);
 }
 
-const counts = new Map();
-const depth = 40;
+const chars = new Map();
+let pairs = new Map();
 for (let i = 0; i < seed.length - 1; i++) {
-    console.log(`Expanding at index ${i}`);
-    expandAndCount(seed[i], seed[i+1], depth, counts);
+    countAdd(chars, seed.at(i), 1);
+    countAdd(pairs, seed.at(i) + seed.at(i+1), 1);
 }
-// console.log(`adding ${seed.at(-1)}`);
-counts.set(seed.at(-1), (counts.get(seed.at(-1)) ?? 0) + 1);
-console.log(counts);
+countAdd(chars, seed.at(-1), 1);
 
-const countVals = Array.from(counts.values());
+//set to 10 for part 1
+const rewrites = 40;
+for (let i = 0; i < rewrites; i++) {
+    const updatedPairs = new Map();
+    for (const [pair, count] of pairs.entries()) {
+        const newChar = ruleLookup.get(pair);
+        countAdd(chars, newChar, count);
+        countAdd(updatedPairs, pair.at(0) + newChar, count);
+        countAdd(updatedPairs, newChar + pair.at(1), count);
+    }
+    pairs = updatedPairs;
+}
+
+const countVals = Array.from(chars.values());
 countVals.sort((a, b) => a - b);
 
 console.log(countVals.at(-1) - countVals.at(0));
