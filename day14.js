@@ -1,4 +1,4 @@
-var fs = require('fs');
+const fs = require('fs');
 
 // const input = fs.readFileSync('day14input_eg.txt', { encoding: 'UTF8' });
 const input = fs.readFileSync('day14input.txt', { encoding: 'UTF8' });
